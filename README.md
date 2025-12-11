@@ -11,7 +11,7 @@ cmake -B build
 cmake --build build
 sudo cmake --build build --target install
 ```
-- For check help use:
+- For get help use:
 ```bash
 ~$ calculator --help
 #or
