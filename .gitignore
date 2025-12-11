@@ -37,5 +37,15 @@
 *.out
 *.app
 
+build/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+*.cmake
+*.o
+*.a
+*.lib
+
 # debug information files
 *.dwo
