@@ -1,7 +1,7 @@
 # Calculator
 
 ## Description
-Simple console calculator
+Simple console calculator for UNIX
 ## How to install
 - Clone repository
 `git clone https://github.com/Vaturia/calculator.git`
