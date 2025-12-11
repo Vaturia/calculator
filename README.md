@@ -7,6 +7,7 @@ Simple console calculator
 `git clone https://github.com/Vaturia/calculator.git`
 - Install
 ```bash
+cd calculator
 cmake -B build
 cmake --build build
 sudo cmake --build build --target install
