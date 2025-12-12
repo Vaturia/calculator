@@ -1,6 +1,6 @@
+#pragma once
 #ifndef PARSING_H
 #define PARSING_H
-#pragma once
 
 #include "utils.hpp"
 

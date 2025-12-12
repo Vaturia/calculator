@@ -1,4 +1,4 @@
-#include "../include/parsing.h"
+#include "parsing.h"
 
 #include <getopt.h>
 #include <stdlib.h>

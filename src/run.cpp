@@ -1,11 +1,11 @@
-#include "../include/run.h"
+#include "run.h"
 
 #include <iostream>
 
-#include "../include/calculate.h"
-#include "../include/parsing.h"
-#include "../include/print.h"
-#include "../include/utils.hpp"
+#include "calculate.h"
+#include "parsing.h"
+#include "print.h"
+#include "utils.hpp"
 int run(int argc, char *argv[])
 {
     utils::Action action;
