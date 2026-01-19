@@ -36,9 +36,14 @@ FetchContent_Declare(
     GIT_TAG v1.17.0
 )
 
-FetchContent_MakeAvailable(math_library json spdlog)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
+)
+
+FetchContent_MakeAvailable(math_library json spdlog googletest)
 add_executable(calculator ${SOURCES_FILES})
-target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog)
+target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog gtest_main)
 
 install(TARGETS calculator DESTINATION bin)
 
