@@ -24,9 +24,21 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/Vaturia/math-operation.git
 )
 
-FetchContent_MakeAvailable(math_library)
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.12.0
+)
+
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    GIT_TAG v1.17.0
+)
+
+FetchContent_MakeAvailable(math_library json spdlog)
 add_executable(calculator ${SOURCES_FILES})
-target_link_libraries(calculator math_library)
+target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog)
 
 install(TARGETS calculator DESTINATION bin)
 
