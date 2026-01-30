@@ -1,21 +1,17 @@
-cmake_minimum_required(VERSION 3.25.1)
+cmake_minimum_required(VERSION 3.10)
 
 project(calculator)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(HEADER_FILES
-    include/run.h
-    include/parsing.h
-    include/calculate.h
-    include/print.h
-    include/utils.hpp
+    include/runner.hpp
+    include/parser.hpp
+    include/compute.hpp
+    include/printer.hpp
+    include/operation.hpp
 )
 set(SOURCES_FILES
     src/main.cpp
-    src/run.cpp
-    src/parsing.cpp
-    src/calculate.cpp
-    src/print.cpp
 )
 include(FetchContent)
 
@@ -36,14 +32,9 @@ FetchContent_Declare(
     GIT_TAG v1.17.0
 )
 
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
-)
-
-FetchContent_MakeAvailable(math_library json spdlog googletest)
+FetchContent_MakeAvailable(math_library json spdlog)
 add_executable(calculator ${SOURCES_FILES})
-target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog gtest_main)
+target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog)
 
 install(TARGETS calculator DESTINATION bin)
 
@@ -67,3 +58,5 @@ if(CLANG_FORMAT)
 else()
     message(WARNING "clang-format not found.")
 endif()
+
+add_subdirectory(tests)
