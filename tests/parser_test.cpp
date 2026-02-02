@@ -12,7 +12,7 @@ TEST(ParserTest, EmptyJsonThrowsException){
     Operation op;
     json empty_json = json::parse("{}");
 
-    EXPECT_THROW(parser.parseFromJson(empty_json, op), const char*);
+    EXPECT_THROW(parser.parseFromJson(empty_json, op), std::invalid_argument);
 }
 
 TEST(ParseTest, SingleFieldModes){
@@ -30,10 +30,10 @@ TEST(ParseTest, SingleFieldModes){
         Operation op;
         parser.parseFromJson(data, op);
 
-        EXPECT_EQ(op.getMode(), expected_mode)
+        EXPECT_EQ(op.m_operationMode, expected_mode)
             << "Для mode='" << mode_str
             << "' ожидался " << static_cast<int>(expected_mode)
-            <<", получен " << static_cast<int>(op.getMode());
+            <<", получен " << static_cast<int>(op.m_operationMode);
     }
 }
 TEST(ParseTest, ThreeFilesMode)
@@ -49,9 +49,9 @@ TEST(ParseTest, ThreeFilesMode)
 
     parser.parseFromJson(data, op);
 
-    EXPECT_EQ(op.getMode(), Operation::Mode::CALC);
-    EXPECT_EQ(op.getOperator(), '!');
-    EXPECT_EQ(op.getFirstNum(), 5);
+    EXPECT_EQ(op.m_operationMode, Operation::Mode::CALC);
+    EXPECT_EQ(op.m_operator, '!');
+    EXPECT_EQ(op.m_first, 5);
 }
 TEST(ParseTest, FourFieldsMode)
 {
@@ -67,8 +67,8 @@ TEST(ParseTest, FourFieldsMode)
 
     parser.parseFromJson(data, op);
 
-    EXPECT_EQ(op.getMode(), Operation::Mode::CALC);
-    EXPECT_EQ(op.getOperator(), '+');
-    EXPECT_EQ(op.getFirstNum(), 5);
-    EXPECT_EQ(op.getSecondNum(), 2);
+    EXPECT_EQ(op.m_operationMode, Operation::Mode::CALC);
+    EXPECT_EQ(op.m_operator, '+');
+    EXPECT_EQ(op.m_first, 5);
+    EXPECT_EQ(op.m_second, 2);
 }

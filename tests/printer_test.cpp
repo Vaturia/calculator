@@ -6,8 +6,8 @@ TEST(PrinterTest, OutputResult){
     Operation op;
     Printer printer;
 
-    op.setMode(Operation::Mode::CALC);
-    op.setResult(100);
+    op.m_operationMode = Operation::Mode::CALC;
+    op.m_result = 100;
 
     std::stringstream buffer;
     std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
@@ -22,7 +22,7 @@ TEST(PrinterTest, OutputHelp){
     Operation op;
     Printer printer;
 
-    op.setMode(Operation::Mode::HELP);
+    op.m_operationMode =  Operation::Mode::HELP;
 
     std::stringstream buffer;
     std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
@@ -40,7 +40,7 @@ TEST(PrinterTest, OutputVersion){
     Operation op;
     Printer printer;
 
-    op.setMode(Operation::Mode::VERSION);
+    op.m_operationMode = Operation::Mode::VERSION;
 
     std::stringstream buffer;
     std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());

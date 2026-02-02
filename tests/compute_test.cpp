@@ -15,15 +15,15 @@ TEST(CalculationTest, TestWithBinaryOp)
         {'/', 2},
         {'^', 25}
     };
-    op.setFirstNum(5);
-    op.setSecondNum(2);
+    op.m_first = 5;
+    op.m_second = 2;
 
     for(const auto& [op_value, result_op] : operations)
     {
-        op.setOperator(op_value);
+        op.m_operator = op_value;
         compute.calculate(op);
 
-        EXPECT_EQ(op.getResult(), result_op);
+        EXPECT_EQ(op.m_result, result_op);
     }
 }
 TEST(CalculationTest, TestWithUnaryOp)
@@ -31,21 +31,21 @@ TEST(CalculationTest, TestWithUnaryOp)
     Operation op;
     Compute compute;
 
-    op.setFirstNum(5);
-    op.setOperator('!');
+    op.m_first = 5;
+    op.m_operator = '!';
 
     compute.calculate(op);
 
-    EXPECT_EQ(op.getResult(), 120);
+    EXPECT_EQ(op.m_result, 120);
 }
 TEST(CalculationTest, ZeroThrowException)
 {
     Operation op;
     Compute compute;
 
-    op.setFirstNum(10);
-    op.setSecondNum(0);
-    op.setOperator('/');
+    op.m_first = 10;
+    op.m_second = 0;
+    op.m_operator = '/';
 
     EXPECT_THROW(compute.calculate(op), std::runtime_error);
 }
