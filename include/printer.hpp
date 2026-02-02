@@ -1,5 +1,5 @@
 #include "operation.hpp"
-#include <spdlog/spdlog.h>
+
 class Printer
 {
 private:
