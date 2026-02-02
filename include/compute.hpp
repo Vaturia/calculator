@@ -1,17 +1,16 @@
 #include <stdexcept>
 #include "operation.hpp"
 #include "math_library.h"
-#include <spdlog/spdlog.h>
+
 class Compute
 {
 public:
     void calculate(Operation &operation)
     {
-        spdlog::info("Calculating...");
 
-        char op = operation.getOperator();
-        long first = operation.getFirstNum();
-        long second = operation.getSecondNum();
+        char op = operation.m_operator;
+        long first = operation.m_first;
+        long second = operation.m_second;
         long long result;
 
         int status_div = 0;
@@ -44,8 +43,6 @@ public:
                 result = 0;
                 break;
         }
-        operation.setResult(result);
-
-        spdlog::info("Calculating done!");
+        operation.m_result = result;
     }
 };

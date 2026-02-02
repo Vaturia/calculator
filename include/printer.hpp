@@ -30,12 +30,10 @@ private:
 public:
     void printOutput(Operation &operation)
     {
-        spdlog::info("Choice printing...");
-        Operation::Mode mode = operation.getMode();
+        Operation::Mode mode = operation.m_operationMode;
         if(mode == Operation::Mode::CALC)
         {
-            long long result = operation.getResult();
-            printResult(result);
+            printResult(operation.m_result);
         }
         else if(mode == Operation::Mode::HELP)
         {
@@ -45,6 +43,5 @@ public:
         {
             printVersion();
         }
-        spdlog::info("Printing done!");
     }
 };
