@@ -2,14 +2,14 @@
 #include <fstream>
 #include <string>
 #include <nlohmann/json.hpp>
-#include <spdlog/spdlog.h>
 using json = nlohmann::json;
 #include "operation.hpp"
+
 
 class Parser 
 {
 private:
-    Operation::Mode convertStrToMode(std::string mode)
+    Operation::Mode convertStrToMode(const std::string &mode)
     {
         if(mode == "help"){ return Operation::Mode::HELP;  }
         else if (mode == "version") { return Operation::Mode::VERSION; }
@@ -21,36 +21,40 @@ public:
     {        
         if(data.empty() || data.is_null())
         {
-            throw "Json is empty!\n";
+            throw std::invalid_argument("Json is empty!");
         }
         else if(data.size() == 1)
         {
-            operation.setMode(convertStrToMode(data["mode"].get<std::string>()));
+            operation.m_operationMode = convertStrToMode(data["mode"].get<std::string>());
         }
         else if(data.size() == 3)
         {
-            operation.setMode(convertStrToMode(data["mode"].get<std::string>()));
-            operation.setFirstNum(data["first_num"].get<long>());
-            operation.setOperator((data["operation"].get<std::string>())[0]);
+            operation.m_operationMode = convertStrToMode(data["mode"].get<std::string>());
+            operation.m_first = data["first_num"].get<long>();
+            operation.m_operator = (data["operation"].get<std::string>())[0];
         }
         else if(data.size() == 4)
         {
-            operation.setFirstNum(data["first_num"].get<long>());
-            operation.setSecondNum(data["second_num"].get<long>());
-            operation.setOperator((data["operation"].get<std::string>())[0]);
-            operation.setMode(convertStrToMode(data["mode"].get<std::string>()));
+            operation.m_first = data["first_num"].get<long>();
+            operation.m_second = (data["second_num"].get<long>());
+            operation.m_operator = (data["operation"].get<std::string>())[0];
+            operation.m_operationMode = convertStrToMode(data["mode"].get<std::string>());
         }
         else
         {
             throw std::invalid_argument("Invalid count arguments!");
         }
+
+        if(operation.m_operationMode == Operation::Mode::ERROR)
+        {
+            throw std::invalid_argument("Invalid mode type!");
+        }
+
     }
     void parse(int argc, char** argv, Operation& operation)
     {
-        spdlog::info("Parsing...");
-        std::ifstream f(argv[1]);
-        json data = json::parse(f);
+        std::string str_argv(argv[1]);
+        json data = json::parse(str_argv);
         parseFromJson(data, operation);
-        spdlog::info("Parsing done!");
     }
 };
