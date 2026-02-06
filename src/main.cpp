@@ -1,5 +1,6 @@
-#include "run.h"
+#include "app.hpp"
 int main(int argc, char *argv[])
 {
-    return run(argc, argv);
+    App calculator(argc, argv);
+    calculator.run();
 }
