@@ -26,20 +26,14 @@ struct Operation
             && m_operator == other.m_operator;
     }
 };
-namespace std {
-     template<>
-    struct hash<Operation>
+struct OperationHash
+{
+    size_t operator()(const Operation& op) const noexcept
     {
-        size_t operator()(const Operation& op) const noexcept
-        {
-            size_t h = 0;
-
-            // Комбинируем хеши только тех полей, которые используются в operator==
-            h ^= hash<long>{}(op.m_first)    + 0x9e3779b9 + (h << 6) + (h >> 2);
-            h ^= hash<long>{}(op.m_second)   + 0x9e3779b9 + (h << 6) + (h >> 2);
-            h ^= hash<char>{}(op.m_operator) + 0x9e3779b9 + (h << 6) + (h >> 2);
-
-            return h;
-        }
-    };
-}
+        size_t h = 0;
+        h ^= std::hash<long>{}(op.m_first)    + 0x9e3779b9 + (h << 6) + (h >> 2);
+        h ^= std::hash<long>{}(op.m_second)   + 0x9e3779b9 + (h << 6) + (h >> 2);
+        h ^= std::hash<char>{}(op.m_operator) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        return h;
+    }
+};

@@ -9,7 +9,7 @@
 class Cache
 {
 private:
-    std::unordered_map<Operation, long long> m_cache;
+    std::unordered_map<Operation, long long, OperationHash> m_cache;
     DBConnection& m_db;
     void load()
     {
