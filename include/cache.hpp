@@ -34,6 +34,8 @@ public:
     }
     bool check(Operation& op)
     {
+        if (op.m_first > op.m_second) 
+            std::swap(op.m_first, op.m_second);
         auto it = m_cache.find(op);
         if(it != m_cache.end())
         {
