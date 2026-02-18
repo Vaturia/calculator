@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/compute.hpp
     include/printer.hpp
     include/operation.hpp
+    include/db_conn.hpp
 )
 set(SOURCES_FILES
     src/main.cpp
@@ -33,8 +34,11 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(math_library json spdlog)
+
+find_package(PostgreSQL REQUIRED)
+
 add_executable(calculator ${SOURCES_FILES})
-target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog)
+target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog PostgreSQL::PostgreSQL)
 
 install(TARGETS calculator DESTINATION bin)
 
