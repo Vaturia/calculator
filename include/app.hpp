@@ -1,16 +1,17 @@
 #include <iostream>
+
+#include "cache.hpp"
+#include "compute.hpp"
+#include "db_conn.hpp"
+#include "logger.hpp"
 #include "operation.hpp"
 #include "parser.hpp"
-#include "compute.hpp"
 #include "printer.hpp"
-#include "logger.hpp"
-#include "cache.hpp"
-#include "db_conn.hpp"
 class App
 {
-private:
+   private:
     int m_argc;
-    char **m_argv;
+    char** m_argv;
     Operation m_operation;
     Parser m_parser;
     Compute m_compute;
@@ -18,14 +19,16 @@ private:
     Logger m_logger;
     DBConnection m_db;
     Cache m_cache;
-public:
-    App(int argc, char **argv)
-        :   m_argc{argc}, m_argv{argv},
-            m_db("host=localhost port=5432 dbname=postgres user=postgres password=12345"),
-            m_cache(m_db)
+
+   public:
+    App(int argc, char** argv)
+        : m_argc{argc},
+          m_argv{argv},
+          m_db("host=localhost port=5432 dbname=postgres user=postgres password=12345"),
+          m_cache(m_db)
     {
     }
-    void run()  
+    void run()
     {
         m_logger.info("Start application");
 
@@ -39,7 +42,7 @@ public:
             bool atCache = m_cache.check(m_operation);
             m_logger.info(atCache ? "Operation found in cache" : "Operation not found in cache");
 
-            if(!(atCache))
+            if (!(atCache))
             {
                 m_logger.info("Start calculating...");
                 m_compute.calculate(m_operation);
@@ -59,7 +62,7 @@ public:
             m_logger.error(e.what());
             m_logger.error("\nUse \n{\n\"mode\":\"help\"\n}\nin file for help\n");
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             m_logger.error(e.what());
             m_logger.error("\nUse \n{\n\"mode\":\"help\"\n}\nin file for help\n");

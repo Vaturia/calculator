@@ -1,14 +1,14 @@
 #pragma once
 
-#include <vector>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
-#include "operation.hpp"
 #include "db_conn.hpp"
+#include "operation.hpp"
 class Cache
 {
-private:
+   private:
     std::unordered_map<Operation, long long, OperationHash> m_cache;
     DBConnection& m_db;
     void load()
@@ -26,18 +26,18 @@ private:
             m_cache[op] = result;
         }
     }
-public:
-    explicit Cache(DBConnection& db)
-        :m_db(db)
+
+   public:
+    explicit Cache(DBConnection& db) : m_db(db)
     {
         load();
     }
     bool check(Operation& op)
     {
-        if (op.m_first > op.m_second) 
+        if (op.m_first > op.m_second)
             std::swap(op.m_first, op.m_second);
         auto it = m_cache.find(op);
-        if(it != m_cache.end())
+        if (it != m_cache.end())
         {
             op.m_result = it->second;
             return true;
@@ -48,12 +48,9 @@ public:
     {
         m_cache[op] = op.m_result;
         std::string sql = "INSERT INTO operations (first, second, operator, result) VALUES (" +
-                          std::to_string(op.m_first) + ", " +
-                          std::to_string(op.m_second) + ", '" +
-                          op.m_operator + "', " +
-                          std::to_string(op.m_result) + ")";
-    
+                          std::to_string(op.m_first) + ", " + std::to_string(op.m_second) + ", '" +
+                          op.m_operator + "', " + std::to_string(op.m_result) + ")";
+
         m_db.exec(sql);
     }
-
 };

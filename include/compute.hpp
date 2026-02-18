@@ -1,13 +1,13 @@
 #include <stdexcept>
-#include "operation.hpp"
+
 #include "math_library.h"
+#include "operation.hpp"
 
 class Compute
 {
-public:
+   public:
     void calculate(Operation &operation)
     {
-
         char op = operation.m_operator;
         long first = operation.m_first;
         long second = operation.m_second;
