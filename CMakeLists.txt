@@ -4,12 +4,14 @@ project(calculator)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(HEADER_FILES
-    include/runner.hpp
     include/parser.hpp
     include/compute.hpp
     include/printer.hpp
     include/operation.hpp
+    include/logger.hpp
     include/db_conn.hpp
+    include/cache.hpp
+    include/app.hpp
 )
 set(SOURCES_FILES
     src/main.cpp
