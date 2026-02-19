@@ -34,8 +34,9 @@ class Cache
     }
     bool check(Operation& op)
     {
-        if (op.m_first > op.m_second)
-            std::swap(op.m_first, op.m_second);
+        if(op.m_operator == '+' || op.m_operator == '*')
+            if (op.m_first < op.m_second)
+                std::swap(op.m_first, op.m_second);
         auto it = m_cache.find(op);
         if (it != m_cache.end())
         {
@@ -51,6 +52,15 @@ class Cache
                           std::to_string(op.m_first) + ", " + std::to_string(op.m_second) + ", '" +
                           op.m_operator + "', " + std::to_string(op.m_result) + ")";
 
+        m_db.exec(sql);
+    }
+    void updateResult(Operation& op)
+    {
+        m_cache[op] = op.m_result;
+        std::string sql = "UPDATE operations SET result = " + std::to_string(op.m_result) + 
+                          " WHERE first = " + std::to_string(op.m_first) +
+                          " AND second = " + std::to_string(op.m_second) +
+                          " AND operator = '" + op.m_operator + "'";
         m_db.exec(sql);
     }
 };

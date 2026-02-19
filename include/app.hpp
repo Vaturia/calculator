@@ -41,15 +41,18 @@ class App
             m_logger.info("Search operation in cache");
             bool atCache = m_cache.check(m_operation);
             m_logger.info(atCache ? "Operation found in cache" : "Operation not found in cache");
-
+            
             if (!(atCache))
             {
+                m_logger.info("Add operation to cache and DB");
+                m_cache.add(m_operation);
                 m_logger.info("Start calculating...");
                 m_compute.calculate(m_operation);
                 m_logger.info("Calculate done!");
-                m_logger.info("Add operation to cache and DB");
-                m_cache.add(m_operation);
-                m_logger.info("Operation added into cache and DB");
+                m_logger.info("Update result of operation in cache and DB");
+                m_logger.info(std::to_string(m_operation.m_result));
+                m_cache.updateResult(m_operation);
+                m_logger.info("Result of operation added into cache and DB");
             }
 
             m_logger.info("Choice printing...");

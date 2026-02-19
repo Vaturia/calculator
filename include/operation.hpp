@@ -16,7 +16,7 @@ struct Operation
     char m_operator;
     long long m_result;
     Mode m_operationMode;
-    Operation() : m_first{0}, m_second{1}, m_operator{0}, m_result{0}, m_operationMode{Mode::ERROR}
+    Operation() : m_first{0}, m_second{1}, m_operator{0}, m_result{-1}, m_operationMode{Mode::ERROR}
     {
     }
     bool operator==(const Operation& other) const
