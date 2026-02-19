@@ -50,7 +50,6 @@ class App
                 m_compute.calculate(m_operation);
                 m_logger.info("Calculate done!");
                 m_logger.info("Update result of operation in cache and DB");
-                m_logger.info(std::to_string(m_operation.m_result));
                 m_cache.updateResult(m_operation);
                 m_logger.info("Result of operation added into cache and DB");
             }
