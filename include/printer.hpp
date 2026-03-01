@@ -2,10 +2,10 @@
 
 class Printer
 {
-private:
+   private:
     void printResult(long long result)
     {
-        std::cout <<"Result of operation: "<< result << '\n';
+        std::cout << "Result of operation: " << result << '\n';
     }
     void printHelp()
     {
@@ -16,7 +16,8 @@ private:
                   << "   \"second_num\": {number},\n   \"operation\": {symbol}\n  }\n";
         std::cout << "Parameters:\n"
                   << "  string\t  Work mode (help, version, calculation)\n"
-                  << "  number\t  Any numbers for calculating (second_num optinal where use \'!\' in operation)\n"
+                  << "  number\t  Any numbers for calculating (second_num optinal where use \'!\' "
+                     "in operation)\n"
                   << "  symbol\t  Mathematical operation (+, -, *, /, or ^)\n";
         std::cout << "Example use:\n  test.json\n"
                   << "  {\n   \"mode\": \"calculation\"\n   \"first_num\": 5 \n"
@@ -27,19 +28,20 @@ private:
     {
         std::cout << "Program name: Calculator\nVersion: 2.0\n";
     }
-public:
+
+   public:
     void printOutput(Operation &operation)
     {
         Operation::Mode mode = operation.m_operationMode;
-        if(mode == Operation::Mode::CALC)
+        if (mode == Operation::Mode::CALC)
         {
             printResult(operation.m_result);
         }
-        else if(mode == Operation::Mode::HELP)
+        else if (mode == Operation::Mode::HELP)
         {
             printHelp();
         }
-        else if(mode == Operation::Mode::VERSION)
+        else if (mode == Operation::Mode::VERSION)
         {
             printVersion();
         }
