@@ -62,6 +62,11 @@ class Parser
             throw std::invalid_argument("Invalid mode type!");
         }
     }
+    void parseFromString(const std::string& jsonStr, Operation& operation)
+    {
+        json data = json::parse(jsonStr);
+        parseFromJson(data, operation);
+    }
     void parse(int argc, char** argv, Operation& operation)
     {
         std::string str_argv(argv[1]);
