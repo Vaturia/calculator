@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -32,6 +33,7 @@ class DBConnection
 {
    private:
     PGconnPtr m_conn;
+    std::mutex m_mutex;
 
    public:
     explicit DBConnection(const std::string &conn_info) : m_conn(PQconnectdb(conn_info.c_str()))
@@ -45,6 +47,7 @@ class DBConnection
 
     void exec(const std::string &sql)
     {
+        std::scoped_lock lock(m_mutex);
         PGresultPtr res(PQexec(m_conn.get(), sql.c_str()));
         if (PQresultStatus(res.get()) != PGRES_COMMAND_OK)
         {
@@ -54,6 +57,7 @@ class DBConnection
     }
     std::vector<std::vector<std::string>> select(const std::string &sql)
     {
+        std::scoped_lock lock(m_mutex);
         PGresultPtr res(PQexec(m_conn.get(), sql.c_str()));
         if (PQresultStatus(res.get()) != PGRES_TUPLES_OK)
         {

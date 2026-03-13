@@ -24,6 +24,10 @@ struct Operation
         return m_first == other.m_first && m_second == other.m_second &&
                m_operator == other.m_operator;
     }
+    std::string resultToString() const
+    {
+        return std::to_string(m_result);
+    }
 };
 struct OperationHash
 {

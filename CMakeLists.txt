@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(calculator)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/build)
 set(HEADER_FILES
     include/parser.hpp
     include/compute.hpp
@@ -37,11 +37,30 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(math_library json spdlog)
 
+
 find_package(PostgreSQL REQUIRED)
+find_package(Protobuf REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ZMQ REQUIRED libzmq)
 
 add_executable(calculator ${SOURCES_FILES})
-target_link_libraries(calculator math_library nlohmann_json::nlohmann_json spdlog::spdlog PostgreSQL::PostgreSQL)
 
+target_link_libraries(calculator 
+    math_library 
+    nlohmann_json::nlohmann_json 
+    spdlog::spdlog 
+    PostgreSQL::PostgreSQL 
+    zmq
+)
+add_executable(calculator_client client/main.cpp)
+
+target_include_directories(calculator_client PRIVATE
+    ${ZMQ_INCLUDE_DIRS}
+)
+
+target_link_libraries(calculator_client
+    ${ZMQ_LIBRARIES}
+)
 install(TARGETS calculator DESTINATION bin)
 
 find_program(CLANG_FORMAT "clang-format")
@@ -63,6 +82,13 @@ if(CLANG_FORMAT)
     message(STATUS "Files for formattin: ${ALL_FILES}")
 else()
     message(WARNING "clang-format not found.")
+endif()
+# В корневой CMakeLists.txt добавить опцию
+option(ENABLE_TSAN "Enable ThreadSanitizer" OFF)
+
+if(ENABLE_TSAN)
+    target_compile_options(calculator PRIVATE -fsanitize=thread -g)
+    target_link_options(calculator PRIVATE -fsanitize=thread)
 endif()
 
 add_subdirectory(tests)

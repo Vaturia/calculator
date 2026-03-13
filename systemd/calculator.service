@@ -1,0 +1,30 @@
+[Unit]
+Description=Calculator ZeroMQ Server
+After=network.target
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+
+
+ExecStart=/usr/local/bin/calculator
+
+User=vaturia
+Group=vaturia
+
+Restart=on-failure
+
+RestartSec=5
+
+# Логи идут в journald автоматически через stdout/stderr
+StandardOutput=journal
+StandardError=journal
+
+# Имя под которым искать логи в journalctl
+SyslogIdentifier=calculator
+
+[Install]
+# multi-user.target — обычный режим работы системы (не графический)
+# Это значит: включить автозапуск при нормальной загрузке системы
+WantedBy=multi-user.target
