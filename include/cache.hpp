@@ -11,6 +11,7 @@ class Cache
    private:
     std::unordered_map<Operation, long long, OperationHash> m_cache;
     DBConnection& m_db;
+    std::mutex m_mutex;
     void load()
     {
         m_cache.clear();
@@ -34,7 +35,8 @@ class Cache
     }
     bool check(Operation& op)
     {
-        if(op.m_operator == '+' || op.m_operator == '*')
+        std::scoped_lock lock(m_mutex);
+        if (op.m_operator == '+' || op.m_operator == '*')
             if (op.m_first < op.m_second)
                 std::swap(op.m_first, op.m_second);
         auto it = m_cache.find(op);
@@ -47,6 +49,7 @@ class Cache
     }
     void add(Operation& op)
     {
+        std::scoped_lock lock(m_mutex);
         m_cache[op] = op.m_result;
         std::string sql = "INSERT INTO operations (first, second, operator, result) VALUES (" +
                           std::to_string(op.m_first) + ", " + std::to_string(op.m_second) + ", '" +
@@ -56,11 +59,12 @@ class Cache
     }
     void updateResult(Operation& op)
     {
+        std::scoped_lock lock(m_mutex);
         m_cache[op] = op.m_result;
-        std::string sql = "UPDATE operations SET result = " + std::to_string(op.m_result) + 
+        std::string sql = "UPDATE operations SET result = " + std::to_string(op.m_result) +
                           " WHERE first = " + std::to_string(op.m_first) +
-                          " AND second = " + std::to_string(op.m_second) +
-                          " AND operator = '" + op.m_operator + "'";
+                          " AND second = " + std::to_string(op.m_second) + " AND operator = '" +
+                          op.m_operator + "'";
         m_db.exec(sql);
     }
 };
