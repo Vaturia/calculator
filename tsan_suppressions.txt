@@ -1,0 +1,2 @@
+race:libzmq.so*
+race:ZMQbg*

@@ -1,73 +1,133 @@
+#pragma once
+#include <atomic>
+#include <csignal>
 #include <iostream>
+#include <nlohmann/json.hpp>
+#include <thread>
+#include <zmq.hpp>
 
 #include "cache.hpp"
 #include "compute.hpp"
 #include "db_conn.hpp"
 #include "logger.hpp"
-#include "operation.hpp"
 #include "parser.hpp"
-#include "printer.hpp"
+
 class App
 {
    private:
-    int m_argc;
-    char** m_argv;
-    Operation m_operation;
-    Parser m_parser;
-    Compute m_compute;
-    Printer m_printer;
+    std::string m_address;
     Logger m_logger;
     DBConnection m_db;
     Cache m_cache;
+    Parser m_parser;
+    Compute m_compute;
+    std::atomic<bool> m_shutdown;
 
-   public:
-    App(int argc, char** argv)
-        : m_argc{argc},
-          m_argv{argv},
-          m_db("host=localhost port=5432 dbname=postgres user=postgres password=12345"),
-          m_cache(m_db)
+    void blockSignals()
     {
+        sigset_t mask;
+        sigemptyset(&mask);
+        sigaddset(&mask, SIGTERM);
+        sigaddset(&mask, SIGINT);
+        pthread_sigmask(SIG_BLOCK, &mask, nullptr);
     }
-    void run()
-    {
-        m_logger.info("Start application");
 
+    void signalThread()
+    {
+        sigset_t mask;
+        sigemptyset(&mask);
+        sigaddset(&mask, SIGTERM);
+        sigaddset(&mask, SIGINT);
+
+        m_logger.info("Signal handler started");
+
+        int sig = 0;
+        sigwait(&mask, &sig);
+
+        m_logger.info("Signal " + std::to_string(sig) + " received, stopping...");
+        m_shutdown = true;
+    }
+    std::string handleRequest(const std::string& requestStr)
+    {
         try
         {
-            m_logger.info("Start parsing...");
-            m_parser.parse(m_argc, m_argv, m_operation);
-            m_logger.info("Parsing done!");
+            Operation op;
+            m_parser.parseFromString(requestStr, op);
 
-            m_logger.info("Search operation in cache");
-            bool atCache = m_cache.check(m_operation);
-            m_logger.info(atCache ? "Operation found in cache" : "Operation not found in cache");
-            
-            if (!(atCache))
+            bool atCache = m_cache.check(op);
+            m_logger.info(atCache ? "Found in cache" : "Not in cache, calculating...");
+
+            if (!atCache)
             {
-                m_logger.info("Add operation to cache and DB");
-                m_cache.add(m_operation);
-                m_logger.info("Start calculating...");
-                m_compute.calculate(m_operation);
-                m_logger.info("Calculate done!");
-                m_logger.info("Update result of operation in cache and DB");
-                m_cache.updateResult(m_operation);
-                m_logger.info("Result of operation added into cache and DB");
+                m_cache.add(op);
+                m_compute.calculate(op);
+                m_cache.updateResult(op);
             }
 
-            m_logger.info("Choice printing...");
-            m_printer.printOutput(m_operation);
-            m_logger.info("Printing done!");
-            m_logger.info("Stop application");
-        }
-        catch (const nlohmann::json::exception& e)
-        {
-            m_logger.error(e.what());
-            m_logger.error("\nUse \n{\n\"mode\":\"help\"\n}\nin file for help\n");
+            json response;
+            response["result"] = op.m_result;
+            response["from_cache"] = atCache;
+            return response.dump();
         }
         catch (const std::exception& e)
         {
             m_logger.error(e.what());
-            m_logger.error("\nUse \n{\n\"mode\":\"help\"\n}\nin file for help\n");
+
+            json error;
+            error["error"] = e.what();
+            return error.dump();
         }
+    }
+    void workerLoop()
+    {
+        zmq::context_t context(1);
+
+        zmq::socket_t socket(context, zmq::socket_type::rep);
+        socket.bind(m_address);
+        m_logger.info("Listening on " + m_address);
+
+        while (!m_shutdown)
+        {
+            zmq::message_t request;
+
+            auto result = socket.recv(request, zmq::recv_flags::dontwait);
+
+            if (!result)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                continue;
+            }
+
+            std::string requestStr(static_cast<char*>(request.data()), request.size());
+            m_logger.info("Received: " + requestStr);
+
+            std::string response = handleRequest(requestStr);
+            m_logger.info("Sending: " + response);
+
+            zmq::message_t reply(response.begin(), response.end());
+            socket.send(reply, zmq::send_flags::none);
+        }
+    }
+
+   public:
+    App(const std::string& address)
+        : m_address(address),
+          m_db("host=localhost port=5432 dbname=postgres user=postgres password=12345"),
+          m_cache(m_db),
+          m_shutdown(false)
+    {
+    }
+    int run()
+    {
+        blockSignals();
+
+        std::thread sigThread(&App::signalThread, this);
+
+        m_logger.info("Server starting on " + m_address);
+        workerLoop();
+
+        sigThread.join();
+        m_logger.info("Server stopped");
+        return 0;
     }
 };
